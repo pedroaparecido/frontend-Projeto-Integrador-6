@@ -1,5 +1,4 @@
 'use client'
-import Card from "@/components/Card/Card";
 import Footer from "@/components/Footer/Footer";
 import MiniCard from "@/components/MiniCard/MiniCard";
 import Navbar from "@/components/Navbar/Navbar";
