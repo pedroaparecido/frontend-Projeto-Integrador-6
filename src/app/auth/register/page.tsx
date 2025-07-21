@@ -2,6 +2,7 @@
 import Button from "@/components/Button/Button"
 import Input from "@/components/Input/Input"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 import { useState, useEffect } from "react"
 
 export default function Register() {
@@ -42,26 +43,22 @@ export default function Register() {
             return
         }
 
-        try {
-            const response = await fetch('http://localhost:3003/auth/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                credentials: 'include',
-                body: JSON.stringify({ name, email, password }),
-            })
+        const response = await fetch('http://localhost:3003/auth/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            credentials: 'include',
+            body: JSON.stringify({ name, email, password }),
+        })
 
-            if (response.ok) {
-                console.log('Cadastro realizado com sucesso!')
-            } else {
-                const errorData = await response.json()
-                console.log(`Erro ao cadastrar: ${errorData.message || response.statusText}`)
-            }
-        } catch (error) {
-            console.error('Erro ao enviar formulário:', error)
-            console.log('Erro de conexão. Tente novamente mais tarde.')
+        if (response.ok) {
+            console.log('Cadastro realizado com sucesso!')
+            redirect('/auth/login')
+        } else {
+            const errorData = await response.json()
+            console.log(`Erro ao cadastrar: ${errorData.message || response.statusText}`)
         }
     }
 

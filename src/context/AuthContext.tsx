@@ -7,14 +7,14 @@ const AuthContext = createContext(null)
 export const AuthProvider = ({ children }: PropsWithChildren) => {
     const [loggedIn, setLoggedIn] = useState(false);
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true); // Para indicar que estamos verificando o status
+    const [loading, setLoading] = useState(true);
 
     const checkAuthStatus = useCallback(async () => {
         setLoading(true);
         try {
             const response = await fetch('http://localhost:3003/auth/status', {
                 method: 'GET',
-                credentials: 'include', // Importantíssimo para enviar os cookies de sessão
+                credentials: 'include',
             });
             const data = await response.json();
             if (response.ok && data.loggedIn) {
@@ -33,17 +33,66 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         }
     }, []);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const login = useCallback(async (email: any, password: any) => {
+        setLoading(true); // Opcional: mostrar carregamento durante o login
+        try {
+            // Primeiro, obtenha o token CSRF
+            const csrfResponse = await fetch('http://localhost:3003/csrf-token');
+            const csrfData = await csrfResponse.json();
+            const csrfToken = csrfData.csrfToken;
+
+            const response = await fetch('http://localhost:3003/auth/signin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken, // Envie o token CSRF no cabeçalho
+                },
+                body: JSON.stringify({ email, password }),
+                credentials: 'include', // Essencial para o Express-session gerenciar a sessão
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Se o login for bem-sucedido, force a verificação do status de autenticação
+                await checkAuthStatus();
+                return { success: true, message: data.message, user: data.user };
+            } else {
+                console.error('Falha no login:', data.message);
+                setLoggedIn(false);
+                setUser(null);
+                return { success: false, message: data.message || 'Erro desconhecido ao fazer login.' };
+            }
+        } catch (error) {
+            console.error('Erro de rede ao fazer login:', error);
+            setLoggedIn(false);
+            setUser(null);
+            return { success: false, message: 'Erro de rede ao fazer login.' };
+        } finally {
+            setLoading(false);
+        }
+    }, [checkAuthStatus]);
+
+
     const logout = useCallback(async () => {
         try {
+            // Para o logout, também é recomendável enviar o token CSRF, pois é uma requisição POST
+            const csrfResponse = await fetch('http://localhost:3003/csrf-token');
+            const csrfData = await csrfResponse.json();
+            const csrfToken = csrfData.csrfToken;
+
             const response = await fetch('http://localhost:3003/auth/logout', {
-                method: 'POST', // Logout deve ser POST para proteção CSRF (se você adicionar)
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken, // Envie o token CSRF no cabeçalho
+                },
                 credentials: 'include',
             });
             if (response.ok) {
                 setLoggedIn(false);
                 setUser(null);
-                // Opcional: Redirecionar para a página inicial ou de login
-                // window.location.href = '/auth/login';
             } else {
                 console.error('Falha ao fazer logout:', await response.json());
             }
@@ -54,19 +103,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
     useEffect(() => {
         checkAuthStatus();
-    }, [checkAuthStatus]); // Roda apenas uma vez no mount
-
-    // Você pode adicionar uma função de login aqui também
-    const login = useCallback(async (email, password) => {
-        // Aqui você faria a requisição de login
-        // Após o sucesso, chame checkAuthStatus() novamente
-        // Exemplo:
-        // const response = await fetch('http://localhost:3003/auth/signin', { ... });
-        // if (response.ok) {
-        //   await checkAuthStatus();
-        // }
     }, [checkAuthStatus]);
-
 
     return (
         <AuthContext.Provider value={{ loggedIn, user, loading, checkAuthStatus, logout, login }}>
