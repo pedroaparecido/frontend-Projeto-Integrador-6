@@ -21,7 +21,7 @@ export default function Navbar() {
             <Link href="/">Home</Link>
             {loggedIn ? (
                 <>
-                    {user && <Link href="#">Olá, {user.email || user.id}</Link>} {/* Mostra o email se disponível */}
+                    {user && <Link href="#">Olá, {user.email || user.id}</Link>}
                     <button onClick={logout} className="text-white hover:underline cursor-pointer">
                         Logout
                     </button>
