@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext"; // Ajuste o caminho conforme sua estrutura
+import { redirect } from "next/navigation";
 
 export default function Navbar() {
     const { loggedIn, user, loading, logout } = useAuth();

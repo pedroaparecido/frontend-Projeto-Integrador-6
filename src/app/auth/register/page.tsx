@@ -10,6 +10,8 @@ export default function Register() {
     const [ email, setEmail ] = useState('')
     const [ name, setName ] = useState('')
     const [ password, setPassword ] = useState('')
+    const [session, setSession] = useState(null)
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         const fetchCsrfToken = async () => {
@@ -61,6 +63,41 @@ export default function Register() {
             console.log(`Erro ao cadastrar: ${errorData.message || response.statusText}`)
         }
     }
+    
+    useEffect(() => {
+    const fetchSession = async () => {
+        try {
+        const response = await fetch('http://localhost:3003/auth/status', {
+            method: 'GET',
+            credentials: 'include',
+        })
+
+        if (response.ok) {
+            const data = await response.json()
+            setSession(data.loggedIn)
+        } else {
+            console.error("Erro ao buscar a sessão:", response.statusText)
+            setSession(false)
+        }
+        } catch (error) {
+        console.error("Erro na requisição:", error);
+        setSession(false)
+        } finally {
+        setIsLoading(false)
+        }
+    };
+
+    fetchSession()
+    }, [])
+
+
+    if (isLoading) {
+    return <div>Carregando...</div>
+    }
+
+    if (session) {
+    redirect('/')
+}
 
     return(
         <div className="flex flex-col justify-center items-center min-h-screen">

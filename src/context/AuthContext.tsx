@@ -55,7 +55,6 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
             const data = await response.json();
 
             if (response.ok) {
-                // Se o login for bem-sucedido, force a verificação do status de autenticação
                 await checkAuthStatus();
                 return { success: true, message: data.message, user: data.user };
             } else {
@@ -77,7 +76,6 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
     const logout = useCallback(async () => {
         try {
-            // Para o logout, também é recomendável enviar o token CSRF, pois é uma requisição POST
             const csrfResponse = await fetch('http://localhost:3003/csrf-token');
             const csrfData = await csrfResponse.json();
             const csrfToken = csrfData.csrfToken;
@@ -86,7 +84,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-csrf-token': csrfToken, // Envie o token CSRF no cabeçalho
+                    'x-csrf-token': csrfToken,
                 },
                 credentials: 'include',
             });

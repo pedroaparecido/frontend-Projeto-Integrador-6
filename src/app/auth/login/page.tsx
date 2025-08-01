@@ -9,6 +9,8 @@ export default function Login() {
     const [ csrfToken, setCsrfToken ] = useState('')
     const [ email, setEmail ] = useState('')
     const [ password, setPassword ] = useState('')
+    const [session, setSession] = useState(null)
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         const fetchCsrfToken = async () => {
@@ -54,11 +56,45 @@ export default function Login() {
 
         if (response.ok) {
             console.log('Cadastro realizado com sucesso!')
-            redirect('/')
+            window.location.href = '/'
         } else {
             const errorData = await response.json()
             console.log(`Erro ao cadastrar: ${errorData.message || response.statusText}`)
         }
+    }
+
+    useEffect(() => {
+    const fetchSession = async () => {
+        try {
+        const response = await fetch('http://localhost:3003/auth/status', {
+            method: 'GET',
+            credentials: 'include',
+        })
+
+        if (response.ok) {
+            const data = await response.json()
+            setSession(data.loggedIn)
+        } else {
+            console.error("Erro ao buscar a sessão:", response.statusText)
+            setSession(false)
+        }
+        } catch (error) {
+        console.error("Erro na requisição:", error);
+        setSession(false)
+        } finally {
+        setIsLoading(false)
+        }
+    };
+
+    fetchSession()
+    }, [])
+
+    if (isLoading) {
+    return <div>Carregando...</div>
+    }
+
+    if (session) {
+    redirect('/')
     }
 
     return(

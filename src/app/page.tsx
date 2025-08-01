@@ -1,12 +1,24 @@
 'use client'
-import Navbar from "@/components/Navbar/Navbar";
-import PageCard from "@/components/PageCard/PageCard";
+import Navbar from "@/components/Navbar/Navbar"
+import PageCard from "@/components/PageCard/PageCard"
+import { redirect } from "next/navigation"
+import { useAuth } from "@/context/AuthContext"
 
 export default function Home() {
-  return (
-    <div>
-      <Navbar />
-      <PageCard />
-    </div>
-  );
+    const { loggedIn, loading } = useAuth()
+
+    if (loading) {
+        return <p>Verificando sessão...</p>;
+    }
+
+    if (!loggedIn) {
+        redirect('/auth/login');
+    }
+
+    return (
+        <div className="h-full">
+            <Navbar />
+            <PageCard />
+        </div>
+    );
 }

@@ -2,12 +2,13 @@
 import MiniCard from "@/components/MiniCard/MiniCard";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation, Pagination } from "swiper/modules";
 import Description from "../Description/Description";
 
 export default function PageCard() {
     return(
-        <div className="flex flex-row">
-        <Swiper className="w-lg object-cover" slidesPerView={1} pagination={{ clickable: true }} navigation>
+        <div className="flex flex-row justify-center">
+        <Swiper className="w-lg object-cover" slidesPerView={1} pagination={{ clickable: true }} navigation modules={[Navigation, Pagination]}>
           <SwiperSlide>
             <img src="/camera.jpg" alt="1" />
             <Description>Câmera Pro, Valor:R$350,00</Description>
