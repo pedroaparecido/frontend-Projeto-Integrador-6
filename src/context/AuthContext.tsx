@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode, PropsWithChildren } from 'react'
 
-const AuthContext = createContext(null)
+const AuthContext = createContext(null) as any
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
     const [loggedIn, setLoggedIn] = useState(false);
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null) as any;
     const [loading, setLoading] = useState(true);
 
     const checkAuthStatus = useCallback(async () => {

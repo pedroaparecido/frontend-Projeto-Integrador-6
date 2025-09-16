@@ -2,13 +2,13 @@
 
 import Link from "next/link"
 import { useAuth } from "@/context/AuthContext"
+import ShowUp from "../ShowUp/ShowUp";
 import { useState } from "react";
 
-export default function Navbar() {
+export default function ProductNavbar() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     const { loggedIn, user, loading, logout } = useAuth();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [visivel, setVisivel] = useState(false)
 
     if (loading) {
@@ -20,8 +20,9 @@ export default function Navbar() {
     }
 
     return(
-        <div className="flex fixed z-50 w-full">
+        <div className="flex fixed z-20 w-full">
             <div className="flex justify-start items-center gap-[20px] font-bold bg-yellow-400 m-[10px] mr-[-10px] p-[20px] w-full rounded-xl">
+                <ShowUp visivel={visivel} setVisivel={setVisivel} />
                 <Link href="/">Home</Link>
                 {loggedIn ? (
                     <>
@@ -45,10 +46,10 @@ export default function Navbar() {
                     </svg>
                     <div className="absolute hidden group-hover:block z-20 top-full left-0 w-full">
                         <div className="flex flex-col-reverse divide-y-5 divide-y-reverse divide-black bg-yellow-500 w-[105px] w-full">
-                            <Link href="/categoria/1" className="w-full text-sm px-3 py-1 hover:bg-orange-400 hover:text-white" >Cerveja</Link>
-                            <Link href="/categoria/2" className="w-full text-sm px-3 py-1 hover:bg-orange-400 hover:text-white" >Sem Álcool</Link>
-                            <Link href="/categoria/3" className="w-full text-sm px-3 py-1 hover:bg-orange-400 hover:text-white" >Destilados</Link>
-                            <Link href="/categoria/4" className="w-full text-sm px-3 py-1 hover:bg-orange-400 hover:text-white" >Drinks</Link>
+                            <Link href="#" className="w-full text-sm px-3 py-1 hover:bg-orange-400 hover:text-white" >Cerveja</Link>
+                            <Link href="#" className="w-full text-sm px-3 py-1 hover:bg-orange-400 hover:text-white" >Sem Álcool</Link>
+                            <Link href="#" className="w-full text-sm px-3 py-1 hover:bg-orange-400 hover:text-white" >Destilados</Link>
+                            <Link href="#" className="w-full text-sm px-3 py-1 hover:bg-orange-400 hover:text-white" >Drinks</Link>
                         </div>
                     </div>
                 </div>
@@ -59,8 +60,8 @@ export default function Navbar() {
                     </svg>
                     <div className="absolute hidden group-hover:block z-20 top-full left-0 w-full">
                         <div className="flex flex-col-reverse divide-y-5 divide-y-reverse divide-black bg-yellow-500">
-                            <Link href="/categoria/5" className="w-full text-sm px-3 py-1 hover:bg-orange-400 hover:text-white" >Mesa/Cadeiras</Link>
-                            <Link href="/categoria/6" className="w-full text-sm px-3 py-1 hover:bg-orange-400 hover:text-white whitespace-nowrap" >Caixa Térmica</Link>
+                            <Link href="#" className="w-full text-sm px-3 py-1 hover:bg-orange-400 hover:text-white" >Mesa/Cadeiras</Link>
+                            <Link href="#" className="w-full text-sm px-3 py-1 hover:bg-orange-400 hover:text-white whitespace-nowrap" >Caixa Térmica</Link>
                         </div>
                     </div>
                 </div>

@@ -9,7 +9,7 @@ export default function Login() {
     const [ csrfToken, setCsrfToken ] = useState('')
     const [ email, setEmail ] = useState('')
     const [ password, setPassword ] = useState('')
-    const [session, setSession] = useState(null)
+    const [session, setSession] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
