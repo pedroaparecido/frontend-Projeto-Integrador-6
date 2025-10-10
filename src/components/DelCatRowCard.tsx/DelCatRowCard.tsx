@@ -1,28 +1,28 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 
-export default function DelRowCard() {
-    const [productTitle, setProductTitle] = useState('')
+export default function DelCatRowCard() {
+    const [categoryName, setCategoryName] = useState('')
 
-    const handleDeleteProduct = async (event: { preventDefault: () => void }) => {
+    const handleDeleteCategory = async (event: { preventDefault: () => void }) => {
         event.preventDefault()
 
-        if (!productTitle) {
-            alert('Por favor, insira o nome do produto para exclusão.')
+        if (!categoryName) {
+            alert('Por favor, insira o nome da categoria para exclusão.')
             return
         }
 
         try {
-            const response = await fetch('http://localhost:3003/product/del', {
+            const response = await fetch('http://localhost:3003/category/del', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ title: productTitle }),
+                },              
+                body: JSON.stringify({ nome: categoryName }),
             })
 
             if (response.ok) {
-                alert('Produto excluído com sucesso!')
-                setProductTitle('')
+                alert('Categoria excluída com sucesso!')
+                setCategoryName('')
             } else {
                 const errorData = await response.json()
                 alert(`Erro ao excluir: ${errorData.message}`)
@@ -34,14 +34,14 @@ export default function DelRowCard() {
     }
 
     return (
-        <form onSubmit={handleDeleteProduct} className="pt-[70px] flex flex-row justify-center w-full bg-zinc-800 text-white">
+        <form onSubmit={handleDeleteCategory} className="pt-[70px] flex flex-row justify-center w-full bg-zinc-800 text-white">
             <div className="flex flex-col justify-center items-center w-full">
-                <label htmlFor="productName">Nome do produto:</label>
+                <label htmlFor="categoryName" className="text-white">Nome da categoria:</label>
                 <input
-                    id="productName"
+                    id="categoryName"
                     type="text"
-                    value={productTitle}
-                    onChange={(e) => setProductTitle(e.target.value)}
+                    value={categoryName}
+                    onChange={(e) => setCategoryName(e.target.value)}
                     className="outline-none bg-zinc-900 text-white w-[80%] rounded shadow-xl"
                 />
                 <hr className="p-[10px] w-[80%] shadow-2xl bg-zinc-700" />

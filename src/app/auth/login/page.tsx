@@ -1,16 +1,14 @@
 'use client'
-import Button from "@/components/Button/Button";
-import Input from "@/components/Input/Input";
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import Button from "@/components/Button/Button"
+import Input from "@/components/Input/Input"
+import Link from "next/link"
+import { redirect } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function Login() {
     const [ csrfToken, setCsrfToken ] = useState('')
     const [ email, setEmail ] = useState('')
     const [ password, setPassword ] = useState('')
-    const [session, setSession] = useState(false)
-    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         const fetchCsrfToken = async () => {
@@ -56,45 +54,11 @@ export default function Login() {
 
         if (response.ok) {
             console.log('Cadastro realizado com sucesso!')
-            window.location.href = '/'
+            window.location.href = '/auth/admin'
         } else {
             const errorData = await response.json()
             console.log(`Erro ao cadastrar: ${errorData.message || response.statusText}`)
         }
-    }
-
-    useEffect(() => {
-    const fetchSession = async () => {
-        try {
-        const response = await fetch('http://localhost:3003/auth/status', {
-            method: 'GET',
-            credentials: 'include',
-        })
-
-        if (response.ok) {
-            const data = await response.json()
-            setSession(data.loggedIn)
-        } else {
-            console.error("Erro ao buscar a sessão:", response.statusText)
-            setSession(false)
-        }
-        } catch (error) {
-        console.error("Erro na requisição:", error);
-        setSession(false)
-        } finally {
-        setIsLoading(false)
-        }
-    };
-
-    fetchSession()
-    }, [])
-
-    if (isLoading) {
-    return <div>Carregando...</div>
-    }
-
-    if (session) {
-    redirect('/')
     }
 
     return(

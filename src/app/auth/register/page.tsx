@@ -1,17 +1,25 @@
 'use client'
+
 import Button from "@/components/Button/Button"
 import Input from "@/components/Input/Input"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { useState, useEffect } from "react"
 
+const ADMIN_AUTH_KEY = 'XYZ-MEU-SEGREDO-ADMIN-MUITO-FORTE-12345'
+const BACKEND_URL = 'http://localhost:3003'
+
 export default function Register() {
     const [ csrfToken, setCsrfToken ] = useState('')
     const [ email, setEmail ] = useState('')
     const [ name, setName ] = useState('')
     const [ password, setPassword ] = useState('')
+    const [ key, setKey ] = useState('')
+    const [ keyValue, setKeyValue ] = useState(false)
     const [session, setSession] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
+
+    const activationLink = `${BACKEND_URL}/auth/check?authkey=${ADMIN_AUTH_KEY}`
 
     useEffect(() => {
         const fetchCsrfToken = async () => {
@@ -44,7 +52,10 @@ export default function Register() {
             console.log('Token CSRF não disponível. Por favor, aguarde ou recarregue a página.')
             return
         }
-
+        if (key === ADMIN_AUTH_KEY) {
+            setKeyValue(true)
+        }
+        
         const response = await fetch('http://localhost:3003/auth/signup', {
             method: 'POST',
             headers: {
@@ -52,7 +63,7 @@ export default function Register() {
                 'X-CSRF-TOKEN': csrfToken
             },
             credentials: 'include',
-            body: JSON.stringify({ name, email, password }),
+            body: JSON.stringify({ name, email, password, keyValue }),
         })
 
         if (response.ok) {
@@ -80,12 +91,12 @@ export default function Register() {
             setSession(false)
         }
         } catch (error) {
-        console.error("Erro na requisição:", error);
+        console.error("Erro na requisição:", error)
         setSession(false)
         } finally {
         setIsLoading(false)
         }
-    };
+    }
 
     fetchSession()
     }, [])
@@ -95,10 +106,6 @@ export default function Register() {
     return <div>Carregando...</div>
     }
 
-    if (session) {
-    redirect('/')
-}
-
     return(
         <div className="flex flex-col justify-center items-center min-h-screen">
             <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center border-1 border-solid p-[40px] rounded-xl gap-[20px] w-xl">
@@ -106,7 +113,8 @@ export default function Register() {
                 <Input tipo="text" holder="Nome" name="name" change={(e: { target: HTMLInputElement }) => setName(e.target.value)} />
                 <Input tipo="email" holder="Email" name="email" change={(e: { target: HTMLInputElement }) => setEmail(e.target.value)} />
                 <Input tipo="password" holder="Password" name="password" change={(e: { target: HTMLInputElement }) => setPassword(e.target.value)} />
-                <Button type="submit">Cadastrar</Button>
+                <Input tipo="password" holder="Key" name="key" change={(e: { target: HTMLInputElement }) => setKey(e.target.value)} />
+                <Button className="bg-gray-300 hover:bg-gray-400 cursor-pointer p-[20px] rounded-xl w-full text-center" >Cadastrar</Button>
                 <span>Já tem uma conta? <Link className="text-indigo-600 underline hover:text-indigo-800 font-semibold" href="/auth/login">Entrar</Link></span>
                 <Link className="text-indigo-600 underline hover:text-indigo-800 font-semibold" href="/">Início</Link>
             </form>
