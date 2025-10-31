@@ -71,8 +71,6 @@ const organizeCategories = (flatCategories: APICategory[]): NavCategory[] => {
 };
 
 export default function Navbar() {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
   const { loggedIn, user, loading: authLoading, logout } = useAuth();
   const [categories, setCategories] = useState<NavCategory[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
