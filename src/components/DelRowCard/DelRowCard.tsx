@@ -32,7 +32,7 @@ export default function DelRowCard() {
                 toast(`Erro ao excluir: ${errorData.message}`)
             }
         } catch (error) {
-            toast.error('Erro na requisição:', error)
+            toast.error(`Erro na requisição: ${error}`)
             toast('Erro de conexão com o servidor.')
         }
     }

@@ -52,7 +52,7 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
         if (paymentStatus === 'approved') {
             setTimeout(() => {
                 toast.success('Pagamento Aprovado! Redirecionando..')
-                window.location.href = '/categoria/1'
+                window.location.href = '/'
             }, 50000)
         } else if (paymentStatus === 'rejected') {
             setTimeout(() => {
@@ -60,7 +60,7 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
                 onClose()
             }, 5000)
         }
-    }, [])
+    }, [onClose, paymentStatus])
 
     const handleCEP = async (e: { preventDefault: () => void }) => {
         e.preventDefault()
