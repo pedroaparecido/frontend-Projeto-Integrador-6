@@ -3,6 +3,8 @@
 import { Navigation, Pagination, Autoplay } from "swiper/modules"
 import { Swiper, SwiperSlide } from "swiper/react"
 import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import { redirect } from "next/navigation"
 
 interface Category {
     id: number
@@ -21,7 +23,7 @@ export default function CardCarousel() {
             try {
                 const response = await fetch('http://localhost:3003/categories')
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`)
+                    toast.error(`HTTP error! status: ${response.status}`)
                 }
                 const data = await response.json()
                 
@@ -30,9 +32,13 @@ export default function CardCarousel() {
                 setCategories(mainCategories)
             } catch (err) {
                 if (err instanceof Error) {
-                    setError(err.message)
+                    toast.error(err.message)
                 } else {
-                    setError("An unknown error occurred")
+                    toast.error('Ocorreu um erro inesperado x_x !!')
+                    setTimeout(() => {}, 5000)
+                    toast('Redirecionando!!')
+                    setTimeout(() => {}, 5000)
+                    redirect('/error/404')
                 }
             } finally {
                 setLoading(false)

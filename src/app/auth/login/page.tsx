@@ -2,8 +2,9 @@
 import Button from "@/components/Button/Button"
 import Input from "@/components/Input/Input"
 import Link from "next/link"
-import { redirect } from "next/navigation"
+import toast, { Toaster } from 'react-hot-toast'
 import { useEffect, useState } from "react"
+import { redirect } from "next/navigation"
 
 export default function Login() {
     const [ csrfToken, setCsrfToken ] = useState('')
@@ -23,11 +24,11 @@ export default function Login() {
                 const data = await response.json()
                 setCsrfToken(data.csrfToken)
                 if (!response.ok) {
-                    throw new Error(`Erro ao buscar CSRF token: ${response.statusText}`)
+                    toast.error(`Erro ao buscar CSRF token: ${response.statusText}`)
                 }
             } catch (error) {
-                console.error('Erro ao buscar CSRF token:', error)
-                console.log('Falha ao carregar o formulário. Tente novamente.')
+                toast.error(`Erro ao buscar CSRF token:' ${error}`)
+                toast('Falha ao carregar o formulário. Tente novamente.')
             }
         }
 
@@ -38,8 +39,8 @@ export default function Login() {
         event.preventDefault()
 
         if (!csrfToken) {
-            console.log('Token CSRF não disponível. Por favor, aguarde ou recarregue a página.')
-            return
+            toast.error('Token CSRF não disponível. Por favor aguarde ou recarregue a página..')
+            window.location.href = '/auth/login'
         }
         
         const response = await fetch('http://localhost:3003/auth/signin', {
@@ -51,25 +52,30 @@ export default function Login() {
             credentials: 'include',
             body: JSON.stringify({ email, password }),
         })
-
-        if (response.ok) {
-            console.log('Cadastro realizado com sucesso!')
-            window.location.href = '/auth/admin'
-        } else {
+        
+        if (response.status === 400) {
+            toast.error('Todos os campos são obriatórios!!')
+        } else if (response.status === 401) {
+            toast.error('Credenciais inválidas')
+        } else if (response.status === 500) {
             const errorData = await response.json()
-            console.log(`Erro ao cadastrar: ${errorData.message || response.statusText}`)
+            toast.error(`Erro ao logar: ${errorData.message || response.statusText}`)
+        } else if (response.ok) {
+            toast.success('Logado com sucesso!')
+            redirect('/')
         }
     }
 
     return(
         <div className="flex flex-col justify-center items-center min-h-screen">
-            <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center border-1 border-solid p-[40px] rounded-xl gap-[20px] w-xl">
+            <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center border-1 border-solid p-[40px] rounded-xl gap-[20px] w-full max-w-sm md:max-w-md">
+               <Toaster />
                 <h1 className="font-bold text-xl">Formulário de login</h1>
                 <Input tipo="email" holder="Email" name="email" change={(e: { target: HTMLInputElement }) => setEmail(e.target.value)} />
                 <Input tipo="password" holder="Password" name="password" change={(e: { target: HTMLInputElement }) => setPassword(e.target.value)} />
                 <Button>Entrar</Button>
                 <span>Não tem uma conta? <Link className="text-indigo-600 underline hover:text-indigo-800 font-semibold" href="/auth/register">Registre-se</Link></span>
-                <Link className="text-indigo-600 underline hover:text-indigo-800 font-semibold" href="/">Início</Link>
+                <Link className="text-sm text-indigo-600 underline hover:text-indigo-800 font-semibold" href="/">Voltar ao início</Link>
             </form>
         </div>
     )

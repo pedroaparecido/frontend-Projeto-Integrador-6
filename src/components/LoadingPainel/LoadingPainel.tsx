@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useCallback } from 'react'
+import toast, { Toaster } from 'react-hot-toast'
 
 export default function LoadingPainel({ orderData, onClose, pixData }: any) {
     const [isCopying, setIsCopying] = useState(false)
@@ -22,7 +23,7 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
     useEffect(() => {
         let intervalId: NodeJS.Timeout
 
-        if (pixData?.id && paymentStatus === 'pending') {
+        if (pixData?.id && paymentStatus === 'approved') {
             const checkPaymentStatus = async () => {
                 try {
                     const response = await fetch(`http://localhost:3003/gateway/status/${pixData.id}`)
@@ -36,7 +37,7 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
                         setPaymentStatus('rejected')
                     }
                 } catch (error) {
-                    console.error('Erro ao checar status do pagamento:', error)
+                    toast.error(`Erro ao checar status do pagamento: ${error}`)
                 }
             }
             
@@ -51,12 +52,12 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
     useEffect(() => {
         if (paymentStatus === 'approved') {
             setTimeout(() => {
-                alert('Pagamento Aprovado! Redirecionando..')
+                toast.success('Pagamento Aprovado! Redirecionando..')
                 window.location.href = '/categoria/1'
             }, 50000)
         } else if (paymentStatus === 'rejected') {
             setTimeout(() => {
-                alert('Pagamento não aprovado! Por favor tente novamente')
+                toast.error('Pagamento não aprovado! Por favor tente novamente')
                 onClose()
             }, 5000)
         }
@@ -65,8 +66,6 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
     const handleCEP = async (e: { preventDefault: () => void }) => {
         e.preventDefault()
 
-        console.log(address)
-        console.log(orderData._id)
         const addressData = await fetch('http://localhost:3003/address/new', {
             method: 'POST',
             headers: {
@@ -83,7 +82,7 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
         })
 
         if (addressData.ok) {
-            alert('Endereço cadastrado com sucesso! Redirecionando...')
+            toast.success('Endereço cadastrado com sucesso! Redirecionando...')
             onClose() 
             window.location.reload()
         }
@@ -105,12 +104,12 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
         }
 
         try {
-            console.log(`Buscando CEP: ${cleanedCep}`)
+            toast(`Buscando CEP: ${cleanedCep}`)
             const response = await fetch(`https://viacep.com.br/ws/${cleanedCep}/json/`)
             const data = await response.json()
 
             if (data.erro) {
-                alert('CEP não encontrado. Por favor, preencha manualmente.')
+                toast.error('CEP não encontrado. Por favor, preencha manualmente.')
             } else {
                 setAddress(prev => ({
                     ...prev,
@@ -119,8 +118,8 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
                 }))
             }
         } catch (error) {
-            console.error("Erro ao buscar CEP:", error)
-            alert('Erro na comunicação com o serviço de CEP.')
+            toast.error(`Erro ao buscar CEP: ${error}`)
+            toast('Erro na comunicação com o serviço de CEP.')
         }
     }, [])
 
@@ -141,6 +140,7 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
     if (!pixData) {
         return (
             <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <Toaster />
                 <div className="bg-white p-8 rounded-lg shadow-xl flex flex-col items-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
                     <h2 className="text-lg font-semibold mt-4">Gerando Pix...</h2>
@@ -152,6 +152,7 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
     if (isApproved) {
         return(
             <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <Toaster />
                 <div className="bg-white p-8 rounded-lg shadow-xl w-[90%] max-w-lg flex flex-col items-center">
                     <h2 className="text-2xl font-bold mb-4 text-green-600">✅ Pagamento Aprovado!</h2>
                     <p className="text-lg font-semibold mb-6">Agora, precisamos do endereço para envio.</p>
@@ -232,6 +233,7 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
 
         return(
             <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <Toaster />
                 <div className="bg-white p-8 rounded-lg shadow-xl w-[90%] max-w-lg flex flex-col items-center">
                     <h2 className="text-2xl font-bold mb-4 text-green-600">Pagamento Pix</h2>
                     
@@ -243,7 +245,7 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
                         <h3 className="text-lg font-semibold mb-2">1. Escaneie o QR Code:</h3>
                         <div className="w-full flex justify-center">
                             <img 
-                                src={`data:image/jpegbase64,${pixData.qr_code_base64}`} 
+                                src={`data:image/jpeg;base64,${pixData.qr_code_base64}`} 
                                 alt="QR Code Pix" 
                                 className="w-48 h-48 border border-gray-300 p-1"
                             />

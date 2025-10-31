@@ -8,7 +8,7 @@ export default function CardProduct({ product, onSelectProduct, addToCart }: any
         >
             <div className="w-full h-40 flex items-center justify-center overflow-hidden rounded-lg mb-3">
                 <img
-                    src={product.source}
+                    src={product.image}
                     alt={product.title}
                     className="w-full h-full object-cover"
                     onError={(e) => (e.currentTarget.src = 'https://placehold.co/150x150/ffc107/000000?text=Sem+Imagem')}

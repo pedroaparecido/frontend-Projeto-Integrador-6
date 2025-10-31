@@ -1,4 +1,6 @@
+import { redirect } from 'next/navigation'
 import React, { useState } from 'react'
+import toast, { Toaster } from 'react-hot-toast'
 
 export default function DelCatRowCard() {
     const [categoryName, setCategoryName] = useState('')
@@ -7,7 +9,7 @@ export default function DelCatRowCard() {
         event.preventDefault()
 
         if (!categoryName) {
-            alert('Por favor, insira o nome da categoria para exclusão.')
+            toast('Por favor, insira o nome da categoria para exclusão.')
             return
         }
 
@@ -20,21 +22,24 @@ export default function DelCatRowCard() {
                 body: JSON.stringify({ nome: categoryName }),
             })
 
+            if (response.status === 404) redirect('/error/404')
+
             if (response.ok) {
-                alert('Categoria excluída com sucesso!')
+                toast('Categoria excluída com sucesso!')
                 setCategoryName('')
             } else {
                 const errorData = await response.json()
-                alert(`Erro ao excluir: ${errorData.message}`)
+                toast(`Erro ao excluir: ${errorData.message}`)
             }
         } catch (error) {
-            console.error('Erro na requisição:', error)
-            alert('Erro de conexão com o servidor.')
+            toast.error(`Erro na requisição: ${error}`)
+            toast('Erro de conexão com o servidor.')
         }
     }
 
     return (
         <form onSubmit={handleDeleteCategory} className="pt-[70px] flex flex-row justify-center w-full bg-zinc-800 text-white">
+            <Toaster />
             <div className="flex flex-col justify-center items-center w-full">
                 <label htmlFor="categoryName" className="text-white">Nome da categoria:</label>
                 <input

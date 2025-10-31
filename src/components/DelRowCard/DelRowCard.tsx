@@ -1,4 +1,6 @@
+import { redirect } from 'next/navigation'
 import { useState } from 'react'
+import toast, { Toaster } from 'react-hot-toast'
 
 export default function DelRowCard() {
     const [productTitle, setProductTitle] = useState('')
@@ -7,7 +9,7 @@ export default function DelRowCard() {
         event.preventDefault()
 
         if (!productTitle) {
-            alert('Por favor, insira o nome do produto para exclusão.')
+            toast('Por favor, insira o nome do produto para exclusão.')
             return
         }
 
@@ -20,21 +22,24 @@ export default function DelRowCard() {
                 body: JSON.stringify({ title: productTitle }),
             })
 
+            if (response.status === 404) redirect('/error/404')
+
             if (response.ok) {
-                alert('Produto excluído com sucesso!')
+                toast('Produto excluído com sucesso!')
                 setProductTitle('')
             } else {
                 const errorData = await response.json()
-                alert(`Erro ao excluir: ${errorData.message}`)
+                toast(`Erro ao excluir: ${errorData.message}`)
             }
         } catch (error) {
-            console.error('Erro na requisição:', error)
-            alert('Erro de conexão com o servidor.')
+            toast.error('Erro na requisição:', error)
+            toast('Erro de conexão com o servidor.')
         }
     }
 
     return (
         <form onSubmit={handleDeleteProduct} className="pt-[70px] flex flex-row justify-center w-full bg-zinc-800 text-white">
+            <Toaster />
             <div className="flex flex-col justify-center items-center w-full">
                 <label htmlFor="productName">Nome do produto:</label>
                 <input

@@ -5,21 +5,13 @@ import Input from "@/components/Input/Input"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { useState, useEffect } from "react"
-
-const ADMIN_AUTH_KEY = 'XYZ-MEU-SEGREDO-ADMIN-MUITO-FORTE-12345'
-const BACKEND_URL = 'http://localhost:3003'
+import toast, { Toaster } from "react-hot-toast"
 
 export default function Register() {
     const [ csrfToken, setCsrfToken ] = useState('')
     const [ email, setEmail ] = useState('')
     const [ name, setName ] = useState('')
     const [ password, setPassword ] = useState('')
-    const [ key, setKey ] = useState('')
-    const [ keyValue, setKeyValue ] = useState(false)
-    const [session, setSession] = useState(false)
-    const [isLoading, setIsLoading] = useState(true)
-
-    const activationLink = `${BACKEND_URL}/auth/check?authkey=${ADMIN_AUTH_KEY}`
 
     useEffect(() => {
         const fetchCsrfToken = async () => {
@@ -34,26 +26,28 @@ export default function Register() {
                 const data = await response.json()
                 setCsrfToken(data.csrfToken)
                 if (!response.ok) {
-                    throw new Error(`Erro ao buscar CSRF token: ${response.statusText}`)
+                    toast.error(`Erro ao buscar CSRF token: ${response.statusText}`)
                 }
             } catch (error) {
-                console.error('Erro ao buscar CSRF token:', error)
-                console.log('Falha ao carregar o formulário. Tente novamente.')
+                toast.error(`Erro ao buscar CSRF token: ${error}`)
+                toast('Falha ao carregar o formulário. Tente novamente.')
             }
         }
 
         fetchCsrfToken()
     }, [])
 
+    const successMessage = () => {
+        toast.success('Cadastrado com sucesso')
+        setTimeout(() => {}, 5000)
+    }
+
     const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault()
 
         if (!csrfToken) {
-            console.log('Token CSRF não disponível. Por favor, aguarde ou recarregue a página.')
+            toast.error('Token CSRF não disponível. Por favor, aguarde ou recarregue a página.')
             return
-        }
-        if (key === ADMIN_AUTH_KEY) {
-            setKeyValue(true)
         }
         
         const response = await fetch('http://localhost:3003/auth/signup', {
@@ -63,60 +57,33 @@ export default function Register() {
                 'X-CSRF-TOKEN': csrfToken
             },
             credentials: 'include',
-            body: JSON.stringify({ name, email, password, keyValue }),
+            body: JSON.stringify({ name, email, password }),
         })
 
-        if (response.ok) {
-            console.log('Cadastro realizado com sucesso!')
-            redirect('/auth/login')
-        } else {
+        if (response.status === 400) {
+            toast.error('Todos os campos são obriatórios!!')
+        } else if (response.status === 409) {
+            toast.error('Email já cadastrado!')
+        } else if (response.status === 500) {
             const errorData = await response.json()
-            console.log(`Erro ao cadastrar: ${errorData.message || response.statusText}`)
+            toast.error(`Erro ao cadastrar: ${errorData.message || response.statusText}`)
+        } else if (response.ok) {
+            successMessage()
+            redirect('/auth/login')
         }
-    }
-    
-    useEffect(() => {
-    const fetchSession = async () => {
-        try {
-        const response = await fetch('http://localhost:3003/auth/status', {
-            method: 'GET',
-            credentials: 'include',
-        })
-
-        if (response.ok) {
-            const data = await response.json()
-            setSession(data.loggedIn)
-        } else {
-            console.error("Erro ao buscar a sessão:", response.statusText)
-            setSession(false)
-        }
-        } catch (error) {
-        console.error("Erro na requisição:", error)
-        setSession(false)
-        } finally {
-        setIsLoading(false)
-        }
-    }
-
-    fetchSession()
-    }, [])
-
-
-    if (isLoading) {
-    return <div>Carregando...</div>
     }
 
     return(
         <div className="flex flex-col justify-center items-center min-h-screen">
-            <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center border-1 border-solid p-[40px] rounded-xl gap-[20px] w-xl">
+            <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center border-1 border-solid p-[40px] rounded-xl gap-[20px] w-full max-w-sm md:max-w-md">
+                <Toaster />
                 <h1 className="font-bold text-xl">Formulário de Registro</h1>
                 <Input tipo="text" holder="Nome" name="name" change={(e: { target: HTMLInputElement }) => setName(e.target.value)} />
                 <Input tipo="email" holder="Email" name="email" change={(e: { target: HTMLInputElement }) => setEmail(e.target.value)} />
                 <Input tipo="password" holder="Password" name="password" change={(e: { target: HTMLInputElement }) => setPassword(e.target.value)} />
-                <Input tipo="password" holder="Key" name="key" change={(e: { target: HTMLInputElement }) => setKey(e.target.value)} />
                 <Button className="bg-gray-300 hover:bg-gray-400 cursor-pointer p-[20px] rounded-xl w-full text-center" >Cadastrar</Button>
                 <span>Já tem uma conta? <Link className="text-indigo-600 underline hover:text-indigo-800 font-semibold" href="/auth/login">Entrar</Link></span>
-                <Link className="text-indigo-600 underline hover:text-indigo-800 font-semibold" href="/">Início</Link>
+                <Link className="text-sm text-indigo-600 underline hover:text-indigo-800 font-semibold" href="/">Voltar ao nício</Link>
             </form>
         </div>
     )

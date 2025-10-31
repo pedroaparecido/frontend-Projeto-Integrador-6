@@ -5,6 +5,8 @@ import DelCatRowCard from "../DelCatRowCard.tsx/DelCatRowCard"
 import DelRowCard from "../DelRowCard/DelRowCard"
 import EditRowCard from "../EditRowCard/EditRowCard"
 import RowCard from "../RowCard/RowCard"
+import toast, { Toaster } from "react-hot-toast"
+import { redirect } from "next/navigation"
 
 interface Category {
     _id: string
@@ -46,11 +48,11 @@ export default function PainelCard() {
             if (Array.isArray(data) && data.length > 0 && data[0].hasOwnProperty('_id')) {
                 setCategories(data)
             } else {
-                console.error('Resposta da API de categorias inválida:', data)
+                toast.error('Resposta da API de categorias inválida:', data)
                 setCategories([])
             }
         } catch (err) {
-            console.error('Erro ao buscar categorias:', err)
+            toast.error('Erro ao buscar categorias:', err)
             setCategories([])
         }
     }
@@ -76,15 +78,17 @@ export default function PainelCard() {
                 body: JSON.stringify({productData})
             })
 
+            if (response.status === 404) redirect('/error/404')
+
             if (response) {
-                alert('Produto adicionado com sucesso!')
+                toast('Produto adicionado com sucesso!')
                 setTitle('')
                 setDescription('')
                 setPrice('')
                 setSelectedCategory('')
             }
         } catch (err) {
-            console.error('Erro ao adicionar produto:', err)
+            toast.error('Erro ao adicionar produto:', err)
         }
     }
 
@@ -108,12 +112,12 @@ export default function PainelCard() {
             })
 
             if (response.ok)
-                alert('Categoria adicionada com sucesso!')
+                toast.success('Categoria adicionada com sucesso!')
                 setNewCategoryName('')
                 setSelectedParentCategory('')
                 fetchCategories()
         } catch (err) {
-            console.error('Erro ao adicionar categoria:', err)
+            toast.error('Erro ao adicionar categoria:', err)
         }
     }
 
@@ -131,7 +135,7 @@ export default function PainelCard() {
             if (Array.isArray(newResp))
                 setProducts(newResp)
         } catch (err) {
-            console.error('Erro ao buscar produtos:', err)
+            toast.error('Erro ao buscar produtos:', err)
         }
     }
 
@@ -155,13 +159,15 @@ export default function PainelCard() {
                 body: JSON.stringify({ title, description})
             })
             
-            if (response.ok)
-                alert('Edição dos produtos com sucesso!')
+            if (response.status === 404) redirect('/error/404')
+            
+            if (response.ok) toast.success('Edição dos produtos com sucesso!')
+            
             setIsEditing(false)
             setSelectedProduct(null)
             fetchProducts()
         } catch (err) {
-            console.log(err)
+            toast.error(`${err}`)
         }
     }
     
@@ -169,11 +175,20 @@ export default function PainelCard() {
         
     const subCategories = (parentId: any) => categories.filter(cat => cat.parent === parentId)
 
-    return (
-        <div className="flex flex-col items-center w-[1200px] h-[500px] bg-zinc-800 shadow-2xl rounded-xl overflow-y-scroll border-solid border-5 border-zinc-700">
-            <h1 className="text-2xl pt-[15px] p-[5px] w-full text-center shadow-xl rounded-xl bg-zinc-900 text-white">Painel de Administração</h1>
-            <form onSubmit={handleAddProduct} className="flex flex-col items-center w-full h-[500px] bg-zinc-800 text-white">
-                <h1 className="text-xl mt-[50px]">Adicionar produto</h1>
+ return (
+        // Container principal: Responsividade e max-width
+        // w-[1200px] foi substituído por w-full max-w-7xl para ser responsivo
+        <div className="flex flex-col items-center w-full max-w-7xl mx-auto bg-zinc-800 shadow-2xl rounded-xl overflow-y-auto border-4 border-zinc-700 p-4 sm:p-6">
+            <Toaster />
+
+            {/* Título do Painel */}
+            <h1 className="text-xl sm:text-2xl py-4 px-2 w-full text-center shadow-lg rounded-xl bg-zinc-900 text-white font-bold mb-6">
+                Painel de Administração
+            </h1>
+
+            {/* Seção: Adicionar Produto */}
+            <form onSubmit={handleAddProduct} className="flex flex-col items-center w-full bg-zinc-800 text-white p-4 rounded-xl shadow-inner mb-8">
+                <h2 className="text-lg sm:text-xl font-semibold mb-6">Adicionar Produto</h2>
                 <RowCard
                     title={title}
                     description={description}
@@ -185,36 +200,81 @@ export default function PainelCard() {
                     onPriceChange={(e) => setPrice(e.target.value)}
                     categories={categories}
                 />
-                <button type="submit" className="p-[20px] hover:bg-zinc-900 hover:border-solid hover:border-white hover:border-8 hover:cursor-pointer hover:text-white bg-white text-zinc-900 rounded-xl shadow-2xl mt-[50px] w-[90%] mb-[30px]">
-                    Adicionar
+                <button 
+                    type="submit" 
+                    className="w-full max-w-sm p-3 mt-8 bg-white text-zinc-900 font-bold rounded-xl shadow-lg 
+                               hover:bg-zinc-900 hover:text-white hover:border-4 hover:border-white transition-all duration-200"
+                >
+                    Adicionar Produto
                 </button>
             </form>
-            <div className="flex flex-col items-center w-full h-[500px] bg-zinc-800 text-white">
-                <h1 className="flex flex-col text-xl mt-[50px] mb-[30px] w-full items-center">Edição de Produtos</h1>
+
+            {/* Seção: Edição de Produtos */}
+            <div className="flex flex-col items-center w-full bg-zinc-800 text-white p-4 sm:p-6 mb-8">
+                <h2 className="text-lg sm:text-xl font-semibold mb-8 w-full text-center">Edição de Produtos</h2>
+                
                 {isEditing ? (
-                    <form onSubmit={handleEdit} className="flex flex-col items-center w-full h-[500px] rounded-xl bg-zinc-900">
-                        <EditRowCard product={selectedProduct} input1={e => setTitle(e.target.value)} input2={e => setDescription(e.target.value)} input3={e => setPrice(e.target.value)} />
-                        <button type="submit" className="p-[20px] hover:bg-zinc-800 hover:border-solid hover:border-white hover:border-8 hover:cursor-pointer hover:text-white bg-white text-zinc-900 rounded-xl shadow-2xl w-[90%] z-20">Editar</button>
+                    /* Formulário de Edição */
+                    <form onSubmit={handleEdit} className="flex flex-col items-center w-full bg-zinc-900 p-6 rounded-xl shadow-xl">
+                        <EditRowCard 
+                            product={selectedProduct} 
+                            input1={e => setTitle(e.target.value)} 
+                            input2={e => setDescription(e.target.value)} 
+                            input3={e => setPrice(e.target.value)} 
+                        />
+                        <button 
+                            type="submit" 
+                            className="w-full max-w-sm p-3 mt-6 bg-white text-zinc-900 font-bold rounded-xl shadow-lg 
+                                       hover:bg-zinc-800 hover:text-white hover:border-4 hover:border-white transition-all duration-200 z-20"
+                        >
+                            Salvar Edição
+                        </button>
+                         <button 
+                            type="button" 
+                            onClick={() => setIsEditing(false)}
+                            className="w-full max-w-sm p-3 mt-3 bg-red-600 text-white font-bold rounded-xl shadow-lg 
+                                       hover:bg-red-700 transition-all duration-200 z-20"
+                        >
+                            Cancelar
+                        </button>
                     </form>
                 ) : (
-                    <div className="grid grid-cols-4 gap-[10px] w-full h-[500px] text-white overflow-y-scroll">
+                    /* Visualização de Produtos em Cards (Responsivo Grid) */
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 w-full max-h-[500px] overflow-y-auto p-2">
                         {products.map(product => (
-                            <div key={product._id} className="flex flex-col items-center justify-start w-[250px] h-[250px] bg-zinc-900 mt-[30px] rounded-2xl shadow-2xl" onClick={() => handleProductSelect(product)}>
-                                <img src={product.image} alt="beer" className="object-cover shadow-2xl" />
-                                <h3>Título: {product.title}</h3>
-                                <p>Descrção: {product.description}</p>
-                                <p>Preço: {product.price}</p>
-                                <button className="w-[90%] bg-yellow-400 hover:bg-orange-400 hover:text-white hover:border-solid hover:border-3 hover:border-yellow-400 p-[5[4px] shadow-xl mt-[10px]">Editar</button>
+                            <div 
+                                key={product._id} 
+                                className="flex flex-col items-center justify-start bg-zinc-900 rounded-xl shadow-2xl p-4 cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-yellow-500/50" 
+                                onClick={() => handleProductSelect(product)}
+                            >
+                                {/* O card agora usa 'w-full' para ocupar o espaço do grid */}
+                                <div className="w-full h-32 mb-3 overflow-hidden rounded-lg">
+                                    <img 
+                                        src={product.image} 
+                                        alt={product.title} 
+                                        className="object-cover w-full h-full shadow-lg" 
+                                    />
+                                </div>
+                                <h3 className="text-base font-semibold truncate w-full text-center mb-1">{product.title}</h3>
+                                <p className="text-xs text-gray-400 text-center mb-1 line-clamp-2">{product.description}</p>
+                                <p className="text-sm font-bold text-yellow-400 mb-3">R$ {product.price || 'N/A'}</p>
+                                
+                                <button className="w-full p-2 bg-yellow-400 text-zinc-900 font-semibold rounded-lg shadow-xl hover:bg-orange-400 hover:text-white transition-colors">
+                                    Editar
+                                </button>
                             </div>
                         ))}
                     </div>
                 )}
             </div>
             
-            <h1 className="text-center text-xl pt-[50px] text-white bg-zinc-900 w-full h-full">Exclusão de produtos</h1>
-            <DelRowCard />
-            <h1 className="text-xl pt-[50px] bg-zinc-900 text-white w-full text-center">Adicionar Categoria</h1>
-            <form onSubmit={handleAddCategory} className="flex flex-col items-center w-full h-[500px] bg-zinc-800 text-white">
+            {/* Seção: Exclusão de Produtos */}
+            <h2 className="text-xl py-4 bg-zinc-900 text-white w-full text-center mt-8 font-bold">Exclusão de Produtos</h2>
+            <DelRowCard /> {/* Componente de exclusão precisa ser responsivo internamente */}
+
+            {/* Seção: Adicionar Categoria */}
+            <h2 className="text-xl py-4 mt-8 bg-zinc-900 text-white w-full text-center font-bold">Adicionar Categoria</h2>
+            <form onSubmit={handleAddCategory} className="flex flex-col items-center w-full bg-zinc-800 text-white p-4 rounded-xl shadow-inner mb-8">
                 <CatRowCard
                     newCategoryName={newCategoryName}
                     selectedParentCategory={selectedParentCategory}
@@ -222,30 +282,42 @@ export default function PainelCard() {
                     onNewCategoryChange={(e) => setNewCategoryName(e.target.value)}
                     onParentCategoryChange={setSelectedParentCategory}
                 />
-                <button type="submit" className="p-[20px] hover:bg-black hover:border-solid hover:border-white hover:border-8 hover:cursor-pointer hover:text-white bg-white text-black rounded-xl shadow-2xl mt-[50px] w-[90%] mb-[30px]">
-                    Adicionar
+                <button 
+                    type="submit" 
+                    className="w-full max-w-sm p-3 mt-8 bg-white text-black font-bold rounded-xl shadow-lg 
+                               hover:bg-black hover:text-white hover:border-4 hover:border-white transition-all duration-200"
+                >
+                    Adicionar Categoria
                 </button>
             </form>
             
-            <h1 className="text-xl pt-[50px] bg-zinc-900 text-white w-full text-center">
+            {/* Seção: Categorias Existentes */}
+            <h2 className="text-xl py-4 bg-zinc-900 text-white w-full text-center font-bold">
                 Categorias e Subcategorias Existentes
-            </h1>
-            <div className="pt-4 bg-zinc-800 w-full text-center text-white">
-                {parentCategories.map(parentCat => (
-                    <div key={parentCat._id} className="pt-4 bg-zinc-800 w-full text-center text-white">
-                        <p className="font-bold">{parentCat.nome}</p>
-                        <div className="ml-4">
-                            {subCategories(parentCat._id).map(subCat => (
-                                <p key={subCat._id} className="ml-4">- {subCat.nome}</p>
-                            ))}
+            </h2>
+            <div className="pt-4 bg-zinc-800 w-full text-center text-white p-4 sm:p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {parentCategories.map(parentCat => (
+                        <div key={parentCat._id} className="bg-zinc-700 p-4 rounded-lg shadow-md">
+                            <p className="font-bold text-lg mb-2 text-yellow-300">{parentCat.nome}</p>
+                            <div className="flex flex-col items-start pl-2">
+                                {subCategories(parentCat._id).map(subCat => (
+                                    <p key={subCat._id} className="text-sm text-gray-300 ml-4 border-l border-gray-500 pl-2">
+                                        - {subCat.nome}
+                                    </p>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
             
-            <h1 className="text-xl bg-zinc-900 text-white w-full text-center">Exclusão de Categoria</h1>
-            <DelCatRowCard />
-            <div className="mt-[50px]"></div>
+            {/* Seção: Exclusão de Categoria */}
+            <h2 className="text-xl py-4 bg-zinc-900 text-white w-full text-center mt-8 font-bold">Exclusão de Categoria</h2>
+            <DelCatRowCard /> {/* Componente de exclusão precisa ser responsivo internamente */}
+            
+            {/* Espaço no final */}
+            <div className="h-12"></div>
         </div>
     )
 }

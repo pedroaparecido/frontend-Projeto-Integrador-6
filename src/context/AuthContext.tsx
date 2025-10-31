@@ -3,6 +3,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode, PropsWithChildren } from 'react'
+import toast, { Toaster } from 'react-hot-toast'
 
 const AuthContext = createContext(null) as any
 
@@ -38,13 +39,13 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
                 setUser(data.user)
                 return { success: true, message: data.message, user: data.user }
             } else {
-                console.error('Falha no login:', data.message)
+                toast.error('Falha no login:', data.message)
                 setLoggedIn(false)
                 setUser(null)
                 return { success: false, message: data.message || 'Erro desconhecido ao fazer login.' }
             }
         } catch (error) {
-            console.error('Erro de rede ao fazer login:', error)
+            toast.error(`Erro de rede ao fazer login: ${error}`)
             setLoggedIn(false)
             setUser(null)
             return { success: false, message: 'Erro de rede ao fazer login.' }
@@ -72,10 +73,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
                 setLoggedIn(false)
                 setUser(null)
             } else {
-                console.error('Falha ao fazer logout:', await response.json())
+                toast.error('Falha ao fazer logout:', await response.json())
             }
         } catch (error) {
-            console.error('Erro de rede ao fazer logout:', error)
+            toast.error(`Erro de rede ao fazer logout: ${error}`)
         }
     }, [])
 
@@ -97,7 +98,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
                     setUser(null)
                 }
             } catch (error) {
-                console.error('Erro ao verificar status de autenticação:', error)
+                toast.error(`Erro ao verificar status de autenticação: ${error}`)
                 setLoggedIn(false)
                 setUser(null)
             } finally {
@@ -110,6 +111,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
     return (
         <AuthContext.Provider value={{ loggedIn, user, loading, logout, login, cartItems, setCartItems }}>
+            <Toaster />
             {children}
         </AuthContext.Provider>
     )
