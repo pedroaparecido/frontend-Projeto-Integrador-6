@@ -54,7 +54,7 @@ export default function PainelCard() {
                 setCategories([])
             }
         } catch (err) {
-            toast.error('Erro ao buscar categorias:', err)
+            toast.error(`Erro ao buscar categorias: ${err}`)
             setCategories([])
         }
     }
