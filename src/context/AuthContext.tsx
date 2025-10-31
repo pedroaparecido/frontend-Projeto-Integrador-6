@@ -5,15 +5,27 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode, PropsWithChildren } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 
-const AuthContext = createContext(null) as any
+// 1. DEFINIÇÃO DA INTERFACE DO CONTEXTO
+interface AuthContextType {
+    loggedIn: boolean;
+    user: any; 
+    loading: boolean;
+    logout: () => Promise<void>;
+    login: (email: any, password: any) => Promise<any>;
+    cartItems: any[];
+    setCartItems: React.Dispatch<React.SetStateAction<any[]>>;
+}
+
+// 2. CRIAÇÃO DO CONTEXTO COM O TIPO ADEQUADO
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
+    // ... Seu estado aqui ...
     const [loggedIn, setLoggedIn] = useState(false)
     const [user, setUser] = useState(null) as any
-    const [cartItems, setCartItems] = useState([])
+    const [cartItems, setCartItems] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 
-    // Função de login que se comunica com o backend
     const login = useCallback(async (email: any, password: any) => {
         setLoading(true)
         try {
@@ -117,10 +129,15 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     )
 }
 
+// 3. HOOK useAuth CORRIGIDO
 export const useAuth = () => {
     const context = useContext(AuthContext)
-    if (context === undefined) {
-        throw new Error('useAuth deve ser usado no AuthProvider')
+    
+    if (context === null) { // Verifica se o valor é null
+        // Lança erro se o hook for chamado fora do Provider
+        throw new Error('useAuth deve ser usado dentro de um AuthProvider') 
     }
+    
+    // Retorna o contexto, agora garantido pelo TypeScript como AuthContextType
     return context
 }

@@ -75,8 +75,6 @@ const organizeCategories = (flatCategories: APICategory[]): NavCategory[] => {
 };
 
 export default function NavbarAdmin() {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
   const { loggedIn, user, loading, logout } = useAuth();
   const [categories, setCategories] = useState<NavCategory[]>([]);
   const [order, setOrder] = useState([]);
