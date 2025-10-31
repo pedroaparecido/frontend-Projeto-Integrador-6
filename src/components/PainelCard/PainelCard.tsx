@@ -22,6 +22,7 @@ interface Product {
         description: string
         image?: string
         categoria: string
+        price: string
     }
 
 export default function PainelCard() {
@@ -90,7 +91,7 @@ export default function PainelCard() {
                 setSelectedCategory('')
             }
         } catch (err) {
-            toast.error('Erro ao adicionar produto:', err)
+            toast.error(`Erro ao adicionar produto: ${err}`)
         }
     }
 
@@ -119,7 +120,7 @@ export default function PainelCard() {
                 setSelectedParentCategory('')
                 fetchCategories()
         } catch (err) {
-            toast.error('Erro ao adicionar categoria:', err)
+            toast.error(`Erro ao adicionar categoria: ${err}`)
         }
     }
 
@@ -137,7 +138,7 @@ export default function PainelCard() {
             if (Array.isArray(newResp))
                 setProducts(newResp)
         } catch (err) {
-            toast.error('Erro ao buscar produtos:', err)
+            toast.error(`Erro ao buscar produtos: ${err}`)
         }
     }
 
@@ -220,9 +221,9 @@ export default function PainelCard() {
                     <form onSubmit={handleEdit} className="flex flex-col items-center w-full bg-zinc-900 p-6 rounded-xl shadow-xl">
                         <EditRowCard 
                             product={selectedProduct} 
-                            input1={e => setTitle(e.target.value)} 
-                            input2={e => setDescription(e.target.value)} 
-                            input3={e => setPrice(e.target.value)} 
+                            input1={(e: { target: { value: SetStateAction<string> } }) => setTitle(e.target.value)} 
+                            input2={(e: { target: { value: SetStateAction<string> } }) => setDescription(e.target.value)} 
+                            input3={(e: { target: { value: SetStateAction<string> } }) => setPrice(e.target.value)} 
                         />
                         <button 
                             type="submit" 
