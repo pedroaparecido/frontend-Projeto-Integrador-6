@@ -79,7 +79,7 @@ export default function Navbar() {
   useEffect(() => {
     const fetchAndOrganizeCategories = async () => {
       try {
-        const response = await fetch("http://localhost:3003/categories");
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

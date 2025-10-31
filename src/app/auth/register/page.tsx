@@ -16,7 +16,7 @@ export default function Register() {
     useEffect(() => {
         const fetchCsrfToken = async () => {
             try {
-                const response = await fetch('http://localhost:3003/csrf-token', {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/csrf-token`, {
                     method: 'GET',
                     credentials: 'include',
                     headers: {
@@ -50,7 +50,7 @@ export default function Register() {
             return
         }
         
-        const response = await fetch('http://localhost:3003/auth/signup', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

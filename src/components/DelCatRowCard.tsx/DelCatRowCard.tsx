@@ -14,7 +14,7 @@ export default function DelCatRowCard() {
         }
 
         try {
-            const response = await fetch('http://localhost:3003/category/del', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/category/del`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

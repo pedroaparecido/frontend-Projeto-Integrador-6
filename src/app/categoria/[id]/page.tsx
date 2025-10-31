@@ -28,7 +28,7 @@ export default function Categories({ visivel }: any) {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('http://localhost:3003/categories')
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`)
                 const data = await response.json()
                 
                 setCategories(data)
@@ -43,7 +43,7 @@ export default function Categories({ visivel }: any) {
     useEffect(() => {
         const fetchCsrfToken = async () => {
             try {
-                const response = await fetch('http://localhost:3003/csrf-token', {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/csrf-token`, {
                     method: 'GET',
                     credentials: 'include',
                     headers: {
@@ -95,7 +95,7 @@ export default function Categories({ visivel }: any) {
             handleOpenPanel()
 
             try {
-                const payResponse = await fetch('http://localhost:3003/gateway/pay', {
+                const payResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/gateway/pa`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
@@ -109,7 +109,7 @@ export default function Categories({ visivel }: any) {
                 })
 
                 if (payResponse.ok) {
-                    const orderResponse = await fetch('http://localhost:3003/order/new', {
+                    const orderResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/order/new`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({orderItems})

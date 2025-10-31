@@ -14,7 +14,7 @@ export default function Login() {
     useEffect(() => {
         const fetchCsrfToken = async () => {
             try {
-                const response = await fetch('http://localhost:3003/csrf-token', {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/csrf-token`, {
                     method: 'GET',
                     credentials: 'include',
                     headers: {
@@ -43,7 +43,7 @@ export default function Login() {
             window.location.href = '/auth/login'
         }
         
-        const response = await fetch('http://localhost:3003/auth/signin', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

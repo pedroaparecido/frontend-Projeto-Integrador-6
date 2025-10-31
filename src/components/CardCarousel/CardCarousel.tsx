@@ -23,7 +23,7 @@ export default function CardCarousel() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('http://localhost:3003/categories')
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`)
                 if (!response.ok) {
                     toast.error(`HTTP error! status: ${response.status}`)
                 }

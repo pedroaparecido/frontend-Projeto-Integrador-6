@@ -39,7 +39,7 @@ export default function PainelCard() {
 
         const fetchCategories = async () => {
         try {
-            const responsePromise: Promise<Response> = fetch('http://localhost:3003/categories', {
+            const responsePromise: Promise<Response> = fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -73,7 +73,7 @@ export default function PainelCard() {
                 price,
                 categoriaNome: selectedCategory,
             }
-            const response = await fetch('http://localhost:3003/product/new', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/new`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -103,7 +103,7 @@ export default function PainelCard() {
                 parentId: selectedParentCategory
             }
 
-            const response = await fetch('http://localhost:3003/categories/new', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/new`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -126,7 +126,7 @@ export default function PainelCard() {
 
     const fetchProducts = async () => {
         try {
-            const response = await fetch('http://localhost:3003/products', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -154,7 +154,7 @@ export default function PainelCard() {
     const handleEdit = async (event: { preventDefault: () => void }) => {
         event.preventDefault()
         try {
-            const response = await fetch(`http://localhost:3003/product/edit/${selectedProduct?._id}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/edit/${selectedProduct?._id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'

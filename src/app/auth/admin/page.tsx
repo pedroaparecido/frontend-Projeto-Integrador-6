@@ -11,7 +11,7 @@ export default function PainelAdmin() {
     useEffect(() => {
     const fetchSession = async () => {
         try {
-            const response = await fetch('http://localhost:3003/auth/status', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/status`, {
                 method: 'GET',
                 credentials: 'include',
             })

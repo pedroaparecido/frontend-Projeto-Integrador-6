@@ -100,7 +100,7 @@ export default function NavbarAdmin() {
   useEffect(() => {
     const fetchAndOrganizeCategories = async () => {
       try {
-        const response = await fetch("http://localhost:3003/categories");
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -116,7 +116,7 @@ export default function NavbarAdmin() {
   }, []);
 
   async function handleDelete(body: any) {
-    const response = await fetch("http://localhost:3003/order/del", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/order/del`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

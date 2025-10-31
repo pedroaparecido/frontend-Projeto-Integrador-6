@@ -21,7 +21,7 @@ export default function ShowUp({ categoryId, visivel, setVisivel, onSelectProduc
 
         const fetchProducts = async () => {
             try {
-                const response = await fetch(`http://localhost:3003/product/categoryId/${categoryId}`)
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/categoryId/${categoryId}`)
                 
                 if (response.status === 404) redirect('/error/404')
 

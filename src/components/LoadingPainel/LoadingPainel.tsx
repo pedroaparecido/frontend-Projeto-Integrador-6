@@ -25,7 +25,7 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
         if (pixData?.id && paymentStatus === 'approved') {
             const checkPaymentStatus = async () => {
                 try {
-                    const response = await fetch(`http://localhost:3003/gateway/status/${pixData.id}`)
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/gateway/status/${pixData.id}`)
                     const data = await response.json()
                     
                     const newStatus = data.status.toLowerCase() 
@@ -65,7 +65,7 @@ export default function LoadingPainel({ orderData, onClose, pixData }: any) {
     const handleCEP = async (e: { preventDefault: () => void }) => {
         e.preventDefault()
 
-        const addressData = await fetch('http://localhost:3003/address/new', {
+        const addressData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/address/new`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

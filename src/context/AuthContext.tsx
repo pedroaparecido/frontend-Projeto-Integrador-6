@@ -29,11 +29,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     const login = useCallback(async (email: any, password: any) => {
         setLoading(true)
         try {
-            const csrfResponse = await fetch('http://localhost:3003/csrf-token')
+            const csrfResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/csrf-token`)
             const csrfData = await csrfResponse.json()
             const csrfToken = csrfData.csrfToken
 
-            const response = await fetch('http://localhost:3003/auth/signin', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -69,11 +69,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     // Função de logout que se comunica com o backend
     const logout = useCallback(async () => {
         try {
-            const csrfResponse = await fetch('http://localhost:3003/csrf-token')
+            const csrfResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/csrf-token`)
             const csrfData = await csrfResponse.json()
             const csrfToken = csrfData.csrfToken
 
-            const response = await fetch('http://localhost:3003/auth/logout', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         const checkAuthStatus = async () => {
             setLoading(true)
             try {
-                const response = await fetch('http://localhost:3003/auth/status', {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/status`, {
                     method: 'GET',
                     credentials: 'include',
                 })
