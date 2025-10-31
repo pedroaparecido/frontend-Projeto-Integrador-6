@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SetStateAction, useEffect, useState } from "react"
 import CatRowCard from "../CatRowCard/CatRowCard"

@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import { Navigation, Pagination, Autoplay } from "swiper/modules"
@@ -98,7 +100,6 @@ export default function CardCarousel() {
                     categories.map((category, indice) => (
                         <SwiperSlide key={category.id}>
                             <div className="relative group overflow-hidden rounded-lg shadow-lg">
-                                {/* eslint-disable-next-line @next/next/no-img-element, react/jsx-key */}
                                 <img src={images[indice]} alt={category.name} className="w-full h-48 object-cover transform transition-transform duration-300 group-hover:scale-105" />
                                 <div className="absolute inset-0 flex items-center justify-center p-4">
                                     <p className="text-white text-lg font-semibold text-center">{category.name}</p>

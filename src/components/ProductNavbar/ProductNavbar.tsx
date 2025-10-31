@@ -72,7 +72,6 @@ const organizeCategories = (flatCategories: APICategory[]): NavCategory[] => {
 };
 
 export default function ProductNavbar({ setVisivel, toggleCart, cartCount }: any) {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   const [categories, setCategories] = useState<NavCategory[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { loggedIn, user, loading, logout } = useAuth();
@@ -92,7 +91,7 @@ export default function ProductNavbar({ setVisivel, toggleCart, cartCount }: any
         const organizedCategories = organizeCategories(data);
         setCategories(organizedCategories);
       } catch (err) {
-        toast.error("Erro ao carregar categorias:", err);
+        toast.error(`Erro ao carregar categorias: ${err}`);
       }
     };
 

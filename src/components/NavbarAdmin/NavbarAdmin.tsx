@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "client component";
 
@@ -79,7 +80,6 @@ export default function NavbarAdmin() {
   const { loggedIn, user, loading, logout } = useAuth();
   const [categories, setCategories] = useState<NavCategory[]>([]);
   const [order, setOrder] = useState([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [visivel, setVisivel] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -110,7 +110,7 @@ export default function NavbarAdmin() {
         const organizedCategories = organizeCategories(data);
         setCategories(organizedCategories);
       } catch (err) {
-        toast.error("Erro ao carregar categorias:", err);
+        toast.error(`Erro ao carregar categorias: ${err}`);
       }
     };
 
